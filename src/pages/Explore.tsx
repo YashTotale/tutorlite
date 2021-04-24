@@ -117,15 +117,17 @@ const ExploreMainContent: FC<ExploreMainContentProps> = ({
       {empty ? (
         <h6 style={{ textAlign: "center", color: "gray" }}>No tutors yet...</h6>
       ) : (
-        explore.map((curr: TutorChild) => {
+        explore.map((curr: TutorChild, index: number) => {
           return (
-            <ExploreMainContentChild
-              name={curr.name}
-              school={curr.school}
-              type={curr.subjects.toString() + " tutor "}
-              grade={curr.grade}
-              id={curr.id}
-            />
+            <React.Fragment key={index}>
+              <ExploreMainContentChild
+                name={curr.name}
+                school={curr.school}
+                type={curr.subjects.toString() + " tutor "}
+                grade={curr.grade}
+                id={curr.id}
+              />
+            </React.Fragment>
           );
         })
       )}

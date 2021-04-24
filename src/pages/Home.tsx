@@ -138,14 +138,16 @@ export default () => {
           }}
         >
           {/* instead of displaying the StudentID -> display his name */}
-          {appointments.map((curr: AppointmentType) => (
-            <HomeAppointmentCard
-              title={new Date(curr.Datetime).toString()}
-              withX={curr.StudentID}
-              forX={curr.Subjects.toString()}
-              link={curr.MeetingLink}
-              idToDelete={curr.id}
-            />
+          {appointments.map((curr: AppointmentType, index: number) => (
+            <React.Fragment key={index}>
+              <HomeAppointmentCard
+                title={new Date(curr.Datetime).toString()}
+                withX={curr.StudentID}
+                forX={curr.Subjects.toString()}
+                link={curr.MeetingLink}
+                idToDelete={curr.id}
+              />
+            </React.Fragment>
           ))}
         </div>
       ) : (
@@ -172,13 +174,15 @@ export default () => {
             gridTemplateColumns: "repeat(auto-fill, minmax(450px, 1fr))",
           }}
         >
-          {ts.map((curr: TutorStudentType) => (
-            <HomeStudentTutorCard
-              grade={curr.grade}
-              school={curr.school}
-              name={curr.name}
-              type={curr.subjects.toString()}
-            />
+          {ts.map((curr: TutorStudentType, index: number) => (
+            <React.Fragment key={index}>
+              <HomeStudentTutorCard
+                grade={curr.grade}
+                school={curr.school}
+                name={curr.name}
+                type={curr.subjects.toString()}
+              />
+            </React.Fragment>
           ))}
         </div>
       ) : (

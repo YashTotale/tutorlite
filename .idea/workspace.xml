@@ -2,9 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c38ef352-ae5e-48db-b62e-5a7ca67105f1" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/redux/schedule.slice.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Profile.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Profile.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Store.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Store.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Explore.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Explore.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Home.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Home.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/Schedule.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Schedule.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,7 +58,7 @@
     <property name="node.js.selected.package.standard" value="" />
     <property name="nodejs_interpreter_path" value="node" />
     <property name="nodejs_package_manager_path" value="yarn" />
-    <property name="ts.external.directory.path" value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external" />
+    <property name="ts.external.directory.path" value="$PROJECT_DIR$/node_modules/typescript/lib" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
@@ -98,7 +101,8 @@
       <workItem from="1618983933183" duration="200000" />
       <workItem from="1618987781459" duration="3741000" />
       <workItem from="1619115754557" duration="18282000" />
-      <workItem from="1619295048130" duration="2375000" />
+      <workItem from="1619295048130" duration="4933000" />
+      <workItem from="1619302161552" duration="2942000" />
     </task>
     <servers />
   </component>

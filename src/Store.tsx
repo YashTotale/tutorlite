@@ -50,6 +50,7 @@ import storage from "redux-persist/lib/storage";
 // Reducer Imports
 import { homeReducer } from "./redux/home.slice";
 import { exploreReducer } from "./redux/explore.slice";
+import { scheduleReducer } from "./redux/schedule.slice";
 
 export interface Profile {
   name: string;
@@ -64,6 +65,7 @@ export interface Profile {
 interface State {
   home: any;
   explore: any;
+  schedule: any;
   firebase: FirebaseReducer.Reducer<Profile, Record<string, unknown>>;
   firestore: FirestoreReducer.Reducer;
 }
@@ -71,12 +73,13 @@ interface State {
 const rootPersistConfig = {
   version: 1,
   storage,
-  blacklist: ["home"],
+  blacklist: ["home", "schedule"],
 };
 
 const reducers = combineReducers<State>({
   home: homeReducer,
   explore: exploreReducer,
+  schedule: scheduleReducer,
   firebase: firebaseReducer,
   firestore: firestoreReducer,
 });

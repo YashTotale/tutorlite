@@ -1,24 +1,124 @@
 import { DateTimePicker } from "react-rainbow-components";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Select from "react-select";
+import { useSelector } from "react-redux";
+import { useHistory } from "react-router";
+import { useFirebase } from "react-redux-firebase";
+import { updateTutorStudents } from "../redux/home.slice";
+import { useAppDispatch } from "../Store";
+import { selectOptions, updateSelectOptions } from "../redux/schedule.slice";
 
-const gradeOptions = [
-  { label: 1, value: 1 },
-  { label: 2, value: 2 },
-  { label: 3, value: 3 },
-  { label: 4, value: 4 },
-  { label: 5, value: 5 },
-  { label: 6, value: 6 },
-  { label: 7, value: 7 },
-  { label: 8, value: 8 },
-  { label: 9, value: 9 },
-  { label: 10, value: 10 },
-  { label: 11, value: 11 },
-  { label: 12, value: 12 },
+const allSubjects = [
+  "Biology",
+  "Chemistry",
+  "Physics",
+  "History",
+  "Math",
+  "English",
+  "Spanish",
+  "French",
+  "Music",
 ];
 
+// 1. fetch your tutors if you a student
+// 2. subjects
 export default function Schedule() {
-  const [date, setDate] = React.useState(new Date("2021-4-15 10:00"));
+  const profile: any = useSelector<any>((state) => state.firebase.profile);
+
+  const [date, setDate] = React.useState(new Date("2021-4-25 10:00"));
+  const [meetingLink, setMeetingLink] = React.useState("");
+  const [subjects, setSubjects] = useState<string[]>([]);
+
+  const [stIds, setStIds] = useState([]);
+  const [options, setOptions] = useState<any>([]);
+
+  const uid: any = useSelector<any>((state: any) => state.firebase.auth.uid);
+  const history = useHistory();
+  const [tutor, setTutor] = useState<any>(null);
+  if (uid === undefined) {
+    history.push("/register");
+  }
+
+  const tutorStudentOptions = useSelector(selectOptions);
+
+  const dispatch = useAppDispatch();
+  const firebase = useFirebase();
+
+  const handleSubmit = async () => {
+    if (meetingLink === "") {
+      return;
+    }
+
+    if (tutor === null || subjects.length === 0) {
+      return;
+    }
+
+    const db = firebase.firestore();
+    await db.collection("appointments").add({
+      datetime: date,
+      meetingLink: meetingLink,
+      subjects: subjects,
+      userId: tutor.value,
+    });
+
+    setSubjects([]);
+    setMeetingLink("");
+    setDate(new Date("2021-4-25 10:00"));
+    setOptions([]);
+    alert("You have successfully booked an appointment!");
+
+    history.push("/");
+  };
+
+  useEffect(() => {
+    if (tutorStudentOptions.length !== 0) {
+      for (let i = 0; i < tutorStudentOptions.length; i++) {
+        setOptions(
+          options.concat({
+            label: tutorStudentOptions[i].name,
+            value: tutorStudentOptions[i].id,
+          })
+        );
+      }
+    }
+  }, [tutorStudentOptions]);
+
+  useEffect(() => {
+    const fetchIndividualUser = async (id: string) => {
+      const db = firebase.firestore();
+      const v = await db.collection("users").doc(id).get();
+
+      const x = v.id;
+      dispatch(updateSelectOptions({ ...v.data(), id: x }));
+    };
+
+    if (stIds.length !== 0) {
+      // for each record, fetch the user record
+      for (let i = 0; i < stIds.length; ++i) {
+        fetchIndividualUser(stIds[i]);
+      }
+    }
+  }, [stIds]);
+
+  useEffect(() => {
+    if (uid !== undefined) {
+      const fetchStudentTutors = async () => {
+        // push to db
+        const db = firebase.firestore();
+
+        const { docs } = await db
+          .collection("studentTutor")
+          .where("userId", "==", uid)
+          .get();
+
+        docs.forEach((item) => {
+          setStIds(item.data().childIds);
+        });
+      };
+
+      fetchStudentTutors();
+    }
+  }, [uid]);
 
   return (
     <>
@@ -51,21 +151,29 @@ export default function Schedule() {
               menu: (provided) => ({ ...provided, zIndex: 999999 }),
               menuPortal: (provided) => ({ ...provided, zIndex: 9999 }),
             }}
-            options={gradeOptions}
+            options={options}
             className="basic-multi-select"
             classNamePrefix="select"
+            onChange={(val: any) => setTutor(val ? val : null)}
+            value={tutor ? { value: tutor.value, label: tutor.label } : null}
           />
         </div>
         <div className={"m-3"}>
           <label>Select the subject you will be working on</label>
           <Select
+            isMulti
             styles={{
               menu: (provided) => ({ ...provided, zIndex: 999999 }),
               menuPortal: (provided) => ({ ...provided, zIndex: 9999 }),
             }}
-            options={gradeOptions}
+            options={allSubjects.map((s) => ({
+              value: s,
+              label: s,
+            }))}
             className="basic-multi-select"
             classNamePrefix="select"
+            value={subjects.map((s) => ({ label: s, value: s }))}
+            onChange={(vals) => setSubjects(vals.map((v) => v.value))}
           />
         </div>
         <div className={"m-3"}>
@@ -75,6 +183,10 @@ export default function Schedule() {
               type="email"
               className="input-contains-icon"
               placeholder="Meeting Link"
+              value={meetingLink}
+              onChange={(e) => {
+                setMeetingLink(e.target.value);
+              }}
             />
             <span className="icon">
               <i className="fas fa-user-friends"></i>
@@ -82,7 +194,9 @@ export default function Schedule() {
           </div>
         </div>
         <div className={"m-3"}>
-          <button className="btn-dark u-pull-right">Schedule</button>
+          <button onClick={handleSubmit} className="btn-dark u-pull-right">
+            Schedule
+          </button>
         </div>
       </div>
     </>
