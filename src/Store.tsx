@@ -51,6 +51,20 @@ import storage from "redux-persist/lib/storage";
 import { homeReducer } from "./redux/home.slice";
 import { exploreReducer } from "./redux/explore.slice";
 
+export interface Message {
+  text: string;
+  date: {
+    seconds: number;
+    nanoseconds: number;
+  };
+  user: string;
+}
+
+export interface Chat {
+  users: string[];
+  messages: Message[];
+}
+
 export interface Profile {
   name: string;
   picture: string;
@@ -59,6 +73,7 @@ export interface Profile {
   type: "tutor" | "student";
   subjects: string[];
   grade: number;
+  chats: string[];
 }
 
 interface State {

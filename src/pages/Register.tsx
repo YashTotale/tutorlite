@@ -59,6 +59,7 @@ const Register: FC = () => {
         type,
         subjects,
         grade,
+        chats: [],
       });
     }
 

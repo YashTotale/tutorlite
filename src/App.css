@@ -84,3 +84,56 @@ li {
 .btn-info {
   margin-left: 1rem;
 }
+
+#chat-container {
+  display: flex;
+
+  border: 1px solid lightgray;
+  border-radius: 10px;
+
+  width: 80%;
+}
+
+#chats-list {
+  margin: 10px;
+}
+
+#chat-showcase {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  flex-grow: 1;
+
+  min-width: 200px;
+  border-left: 1px solid lightgray;
+  padding: 10px;
+}
+
+.chat-message {
+  min-height: 50px;
+  min-width: 40%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  justify-content: flex-start;
+
+  border-radius: 10px;
+  border: 1px solid lightgray;
+}
+
+.chat-left {
+  align-self: flex-start;
+}
+
+.chat-right {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.chat-image {
+  height: 40px;
+  margin: 5px;
+  border-radius: 50%;
+}
