@@ -1,6 +1,8 @@
 import { useSelector } from "react-redux";
 import React, { useEffect, useState } from "react";
 import Select from "react-select";
+import { useFirebase } from "react-redux-firebase";
+import { useHistory } from "react-router";
 
 const allSubjects = [
   "Biology",
@@ -26,6 +28,15 @@ export default () => {
   const [school, school_] = useState("");
   const [grade, setGrade] = useState<number | null>(null);
   const [subjects, setSubjects] = useState<string[]>([]);
+
+  const firebase = useFirebase();
+
+  const history = useHistory();
+  const uid: any = useSelector<any>((state: any) => state.firebase.auth.uid);
+
+  if (uid === undefined) {
+    history.push("/register");
+  }
 
   return (
     <div className="frame">
@@ -65,7 +76,19 @@ export default () => {
           <div className="tile__buttons">
             <span
               className="icon"
-              onClick={() => {
+              onClick={async () => {
+                if (editName) {
+                  if (name.length !== 0) {
+                    // push to db
+                    const db = firebase.firestore();
+
+                    await db
+                      .collection("users")
+                      .doc(uid)
+                      .update({ name: name });
+                  }
+                }
+
                 setEditName(!editName);
               }}
             >
@@ -124,7 +147,16 @@ export default () => {
           <div className="tile__buttons">
             <span
               className="icon"
-              onClick={() => {
+              onClick={async () => {
+                if (editGrade) {
+                  if (grade) {
+                    // push to db
+                    const db = firebase.firestore();
+
+                    await db.collection("users").doc(uid).update({ grade });
+                  }
+                }
+
                 setEditGrade(!editGrade);
               }}
             >
@@ -164,7 +196,16 @@ export default () => {
           <div className="tile__buttons">
             <span
               className="icon"
-              onClick={() => {
+              onClick={async () => {
+                if (editSchool) {
+                  if (school.length !== 0) {
+                    // push to db
+                    const db = firebase.firestore();
+
+                    await db.collection("users").doc(uid).update({ school });
+                  }
+                }
+
                 setEditSchool(!editSchool);
               }}
             >
@@ -187,31 +228,60 @@ export default () => {
               <div className="col-2 ignore-screen level-item">
                 <span className="m-0">Subjects:</span>
               </div>
-              <Select
-                isMulti
-                style={{ width: "90%" }}
-                options={allSubjects.map((s) => ({
-                  value: s,
-                  label: s,
-                }))}
-                className="basic-multi-select"
-                classNamePrefix="select"
-                onChange={(vals) => setSubjects(vals.map((v) => v.value))}
-                value={subjects.map((s) => ({ label: s, value: s }))}
-              />
+              <div className="col-9 ignore-screen level-item">
+                <Select
+                  isMulti
+                  styles={{
+                    container: (provided) => ({
+                      ...provided,
+                      width: "100%",
+                    }),
+                    menu: (provided) => ({
+                      ...provided,
+                      position: "relative",
+                    }),
+                    menuPortal: (provided) => ({
+                      ...provided,
+                      position: "relative",
+                    }),
+                  }}
+                  options={allSubjects.map((s) => ({
+                    value: s,
+                    label: s,
+                  }))}
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                  onChange={(vals) => setSubjects(vals.map((v) => v.value))}
+                  value={subjects.map((s) => ({ label: s, value: s }))}
+                />
+              </div>
             </div>
           ) : (
             <div className="tile__container">
               <p className="tile__title">
                 {profile.type === "tutor" ? "Specialization" : "Needs help on"}
               </p>
-              <p className="tile__subtitle">{profile.subjects}</p>
+              <p className="tile__subtitle">
+                {profile.subjects !== undefined &&
+                  profile.subjects.map((curr: any, index: number) => (
+                    <span key={index}>{curr + " "}</span>
+                  ))}
+              </p>
             </div>
           )}
           <div className="tile__buttons">
             <span
               className="icon"
-              onClick={() => {
+              onClick={async () => {
+                if (editType) {
+                  if (subjects.length !== 0) {
+                    // push to db
+                    const db = firebase.firestore();
+
+                    await db.collection("users").doc(uid).update({ subjects });
+                  }
+                }
+
                 setEditType(!editType);
               }}
             >
