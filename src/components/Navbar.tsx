@@ -2,6 +2,7 @@ import user from "../img/user.svg";
 import { useHistory } from "react-router";
 import { useAppDispatch } from "../Store";
 import { logout } from "../redux/logout.slice";
+import { useSelector } from "react-redux";
 
 function deleteAllCookies() {
   const cookies = document.cookie.split(";");
@@ -17,6 +18,7 @@ function deleteAllCookies() {
 export default function Nav() {
   const history = useHistory();
   const dispatch = useAppDispatch();
+  const profile: any = useSelector<any>((state) => state.firebase.profile);
 
   return (
     <div className="header header-fixed unselectable header-animated">
@@ -49,7 +51,7 @@ export default function Nav() {
           <div className="nav-item has-sub toggle-hover" id="dropdown">
             <a className="nav-dropdown-link">
               <img src={user} alt={""} width={20} height={20} />
-              Evan Tu
+              {profile.name}
             </a>
             <ul className="dropdown-menu dropdown-animated" role="menu">
               <li role="menu-item">
