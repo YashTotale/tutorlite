@@ -353,17 +353,20 @@ const ExploreMainContentChild: FC<ExploreMainContentChildProps> = ({
       }}
     >
       <div className={"u-flex u-items-center"}>
-        <div className="tile__icon">
-          <figure className="avatar">
-            <img src="https://i.imgur.com/sbKJVxr.png" />
-          </figure>
-        </div>
-        <div className="tile__container u-hide-overflow">
-          <h6 style={{ marginBottom: 0 }}>{name}</h6>
-          <p className="tile__subtitle m-0">
-            {school}, {type}
-          </p>
-          <p className="tile__subtitle m-0">Grade {grade}</p>
+        <div className="u-flex tile__container u-hide-overflow">
+          <div style={{ marginRight: "15px" }}>
+            <h6 style={{ marginBottom: 0, textAlign: "center" }}>{name}</h6>
+            <div className="tile__icon">
+              <figure className="avatar">
+                <img src="https://i.imgur.com/sbKJVxr.png" />
+              </figure>
+            </div>
+          </div>
+          <div>
+            <p className="tile__subtitle m-0">{school}</p>
+            <p className="tile__subtitle m-0">{type}</p>
+            <p className="tile__subtitle m-0">Grade {grade}</p>
+          </div>
         </div>
       </div>
     </div>

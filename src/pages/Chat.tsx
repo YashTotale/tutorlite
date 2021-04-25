@@ -87,12 +87,9 @@ export default function Chat(): JSX.Element | null {
           .collection("users")
           .doc(option.value)
           .update("chats", [...users[option.value].chats, doc.id]);
-
-        return doc.id;
       })
-      .then((id) => {
-        setSelected(id);
-        setNewChat(null);
+      .then(() => {
+        window.location.reload();
       });
   };
 
@@ -163,6 +160,15 @@ export default function Chat(): JSX.Element | null {
       <div id="chat-showcase">
         <h6>
           {selected ? "Tutorlite Direct Message Service" : "No Chat Selected"}
+          {selected
+            ? chatsObj[selected]
+              ? `Chatting with ${
+                  users[
+                    chatsObj[selected].users.filter((u) => u !== user.uid)[0]
+                  ].name
+                }`
+              : "Chatting"
+            : "No Chat Selected"}
         </h6>
         {selected &&
           chatsObj[selected]?.messages.map((m, i) => (
