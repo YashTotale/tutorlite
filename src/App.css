@@ -91,6 +91,7 @@ li {
   border: 1px solid lightgray;
   border-radius: 10px;
 
+  height: 90vh;
   width: 80%;
 }
 
@@ -100,8 +101,6 @@ li {
 
   display: flex;
   flex-direction: column;
-
-  max-height: 700px;
   overflow-y: scroll;
 }
 
@@ -120,7 +119,7 @@ li {
   border-left: 1px solid lightgray;
   padding: 10px;
 
-  max-height: 700px;
+  height: 90vh;
   overflow-y: scroll;
 }
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "react-chat-elements/dist/main.css";
 //@ts-expect-error No typing
 import { ChatList } from "react-chat-elements";
@@ -11,7 +11,6 @@ import {
   getUsers,
   getUsersLoading,
 } from "../redux";
-import { useHistory } from "react-router";
 import { useFirestore, useFirestoreConnect } from "react-redux-firebase";
 import Select from "react-select";
 import { Message } from "../Store";
@@ -32,31 +31,40 @@ interface ChatComponent {
 }
 
 export default function Chat(): JSX.Element | null {
+  const user = useSelector(getUser);
   useFirestoreConnect({ collection: "users" });
-  useFirestoreConnect({ collection: "chats" });
+
+  if (user.uid !== undefined) {
+    useFirestoreConnect({
+      collection: "chats",
+      where: ["users", "array-contains", user.uid],
+    });
+  }
 
   const firestore = useFirestore();
 
   const [selected, setSelected] = useState<string | null>(null);
   const [input, setInput] = useState("");
   const [newChat, setNewChat] = useState<SelectOption | null>(null);
-
-  const history = useHistory();
-  const user = useSelector(getUser);
+  const [realUsers, setRealUsers] = useState<any>([]);
 
   const users = useSelector(getUsers);
   const usersLoading = useSelector(getUsersLoading);
+
+  useEffect(() => {
+    if (users !== undefined) {
+      console.log(users);
+      setRealUsers(users);
+    }
+  }, [users]);
 
   const chats = useSelector(getChats);
   const chatsObj = useSelector(getChatsObj);
   const chatsLoading = useSelector(getChatsLoading);
 
   if (!chats || chatsLoading || !users || usersLoading) {
+    console.log("EXIT");
     return null;
-  }
-
-  if (user.isEmpty) {
-    history.push("/register");
   }
 
   const onNewChat = (option: SelectOption | null) => {
@@ -130,29 +138,27 @@ export default function Chat(): JSX.Element | null {
         </div>
         <ChatList
           className="chat-list"
-          dataSource={chats
-            .filter((c) => c.users.includes(user.uid))
-            .map(
-              (c): ChatComponent => {
-                const otherUser =
-                  users[c.users.filter((u) => u !== user.uid)[0]];
-                const lastMessage: Message | undefined =
-                  c.messages[c.messages.length - 1];
+          dataSource={chats.map(
+            (c): ChatComponent => {
+              const otherUser =
+                realUsers[c.users.filter((u) => u !== user.uid)[0]];
+              const lastMessage: Message | undefined =
+                c.messages[c.messages.length - 1];
 
-                return {
-                  id: c.id,
-                  avatar: otherUser.picture,
-                  alt: otherUser.name,
-                  title: otherUser.name,
-                  date: lastMessage
-                    ? convertFirestoreDate(lastMessage.date)
-                    : null,
-                  subtitle:
-                    lastMessage &&
-                    `${users[lastMessage.user].name}: ${lastMessage.text}`,
-                };
-              }
-            )}
+              return {
+                id: c.id,
+                avatar: otherUser?.picture,
+                alt: otherUser?.name,
+                title: otherUser?.name,
+                date: lastMessage
+                  ? convertFirestoreDate(lastMessage.date)
+                  : null,
+                subtitle:
+                  lastMessage &&
+                  `${users[lastMessage.user]?.name}: ${lastMessage?.text}`,
+              };
+            }
+          )}
           onClick={(c: ChatComponent) => setSelected(c.id)}
         />
       </div>
@@ -165,7 +171,7 @@ export default function Chat(): JSX.Element | null {
                     chatsObj[selected].users.filter((u) => u !== user.uid)[0]
                   ].name
                 }`
-              : "Chatting"
+              : "Tutorlite Direct Messages"
             : "No Chat Selected"}
         </h6>
         {selected &&
@@ -178,8 +184,8 @@ export default function Chat(): JSX.Element | null {
             >
               <img
                 className="chat-image"
-                src={users[m.user].picture}
-                alt={users[m.user].name}
+                src={realUsers[m.user].picture}
+                alt={realUsers[m.user].name}
               />
               <div>{m.text}</div>
             </div>

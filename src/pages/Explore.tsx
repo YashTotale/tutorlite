@@ -8,6 +8,36 @@ import { useSelector } from "react-redux";
 import Fuse from "fuse.js";
 
 export default () => {
+  const dispatch = useAppDispatch();
+  const firebase = useFirebase();
+
+  const profile: any = useSelector<any>((state) => state.firebase.profile);
+
+  useEffect(() => {
+    const fetchTutors = async () => {
+      const db = firebase.firestore();
+
+      const { docs } = await db
+        .collection("users")
+        .where("type", "==", profile.type === "tutor" ? "student" : "tutor")
+        .get();
+
+      if (docs.length === 0) {
+        return;
+      }
+
+      const temp: TutorType[] = [];
+      docs.forEach((item: TutorType) => {
+        const x = item.id;
+        temp.push({ ...item.data(), id: x });
+      });
+
+      dispatch(updateExplore(temp));
+    };
+
+    fetchTutors();
+  }, []);
+
   const explore = useSelector(selectExplore);
   const options = {
     includeScore: false,
@@ -18,8 +48,6 @@ export default () => {
   if (explore.length !== 0) {
     const fuse = new Fuse(explore, options);
     const result = fuse.search(searchText);
-
-    console.log(result.length === 0, explore, result);
 
     const asd = [];
     for (let i = 0; i < result.length; i++) {
@@ -34,7 +62,7 @@ export default () => {
     );
   }
 
-  return null;
+  return <span>No records found...</span>;
 };
 
 interface ExploreSidebarProps {
@@ -55,9 +83,6 @@ const ExploreSidebar: FC<ExploreSidebarProps> = ({
   const [spanish, spanish_] = useState(false);
   const [french, french_] = useState(false);
   const [music, music_] = useState(false);
-  const [firstAgeGroup, firstAgeGroup_] = useState(false);
-  const [secondAgeGroup, secondAgeGroup_] = useState(false);
-  const [thirdAgeGroup, thirdAgeGroup_] = useState(false);
 
   return (
     <aside className="Sidebar">
@@ -207,39 +232,6 @@ const ExploreSidebar: FC<ExploreSidebarProps> = ({
         />
         <label className="form-ext-label">Music</label>
       </div>
-
-      <h4 style={{ marginTop: 30 }}>Age group</h4>
-
-      <div>
-        <input
-          type="checkbox"
-          checked={firstAgeGroup}
-          onChange={() => {
-            firstAgeGroup_(!firstAgeGroup);
-          }}
-        />
-        <label className="form-ext-label">{ageGroup[0]}</label>
-      </div>
-      <div>
-        <input
-          type="checkbox"
-          checked={secondAgeGroup}
-          onChange={() => {
-            secondAgeGroup_(!secondAgeGroup);
-          }}
-        />
-        <label className="form-ext-label">{ageGroup[1]}</label>
-      </div>
-      <div>
-        <input
-          type="checkbox"
-          checked={thirdAgeGroup}
-          onChange={() => {
-            thirdAgeGroup_(!thirdAgeGroup);
-          }}
-        />
-        <label className="form-ext-label">{ageGroup[2]}</label>
-      </div>
     </aside>
   );
 };
@@ -267,13 +259,15 @@ const ExploreMainContent: FC<ExploreMainContent> = ({ content }) => {
   const [empty, setEmpty] = useState(false);
   const firebase = useFirebase();
 
+  const profile: any = useSelector<any>((state) => state.firebase.profile);
+
   useEffect(() => {
     const fetchTutors = async () => {
       const db = firebase.firestore();
 
       const { docs } = await db
         .collection("users")
-        .where("type", "==", "tutor")
+        .where("type", "==", profile.type === "tutor" ? "student" : "tutor")
         .get();
 
       if (docs.length === 0) {
@@ -295,11 +289,15 @@ const ExploreMainContent: FC<ExploreMainContent> = ({ content }) => {
   return (
     <div className={"MainContent"}>
       <h4 style={{ marginTop: 30, textAlign: "center" }}>
-        Viewing available tutors
+        Viewing available {profile.type === "tutor" ? "students" : "tutors"}
       </h4>
 
       {empty ? (
         <h6 style={{ textAlign: "center", color: "gray" }}>No tutors yet...</h6>
+      ) : content.length === 0 ? (
+        <h6 style={{ textAlign: "center", color: "gray" }}>
+          No {profile.type === "tutor" ? "students" : "tutors"} found...
+        </h6>
       ) : (
         content.map((curr: TutorChild, index: number) => {
           return (
@@ -307,7 +305,10 @@ const ExploreMainContent: FC<ExploreMainContent> = ({ content }) => {
               <ExploreMainContentChild
                 name={curr.name}
                 school={curr.school}
-                type={curr.subjects.toString() + " tutor "}
+                type={
+                  curr.subjects.toString() +
+                  (profile.type === "tutor" ? " student" : " tutor")
+                }
                 grade={curr.grade}
                 id={curr.id}
               />

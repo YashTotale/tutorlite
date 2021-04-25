@@ -10,6 +10,7 @@ const User: FC = (props: any) => {
   const firebase = useFirebase();
   const history = useHistory();
   const uid = useSelector<string>((state: any) => state.firebase.auth.uid);
+  const profile: any = useSelector<any>((state) => state.firebase.profile);
 
   if (uid === undefined) {
     history.push("/register");
@@ -89,7 +90,7 @@ const User: FC = (props: any) => {
             }}
             className="btn-info"
           >
-            Add tutor
+            Add {profile.type === "tutor" ? "student" : "tutor"}
           </button>
         </div>
       </div>
