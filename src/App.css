@@ -96,6 +96,7 @@ li {
 
 #chats-list {
   margin: 10px;
+  max-width: 250px;
 }
 
 #chat-showcase {
@@ -121,6 +122,9 @@ li {
 
   border-radius: 10px;
   border: 1px solid lightgray;
+
+  padding: 3px;
+  margin: 5px 0px;
 }
 
 .chat-left {
