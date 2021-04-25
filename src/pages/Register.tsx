@@ -44,9 +44,6 @@ const Register: FC = () => {
   const uid = useSelector<any>((state) => state.firebase.auth.uid);
 
   const history = useHistory();
-  if (uid !== undefined) {
-    history.push("/");
-  }
 
   if (redirect) {
     if (isNew) {
@@ -64,6 +61,10 @@ const Register: FC = () => {
     }
 
     return <Redirect to={redirect} />;
+  }
+
+  if (uid !== undefined) {
+    history.push("/");
   }
 
   return (
@@ -189,7 +190,6 @@ const Register: FC = () => {
                                   });
                                 }
 
-                                window.location.reload();
                                 setRedirect("/");
 
                                 return true;
