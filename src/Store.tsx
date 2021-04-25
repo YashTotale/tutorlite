@@ -8,6 +8,7 @@ import {
   getDefaultMiddleware,
   ThunkAction,
   Action,
+  PayloadAction,
 } from "@reduxjs/toolkit";
 import { Provider, useDispatch } from "react-redux";
 
@@ -109,8 +110,16 @@ const extraArgument = {
   getFirestore,
 };
 
+const rootReducer = (state: any, action: PayloadAction) => {
+  if (action.type === "logout/logout") {
+    console.log("logging out...");
+    state = undefined;
+  }
+  return persistedReducer(state, action);
+};
+
 const store = configureStore({
-  reducer: persistedReducer,
+  reducer: rootReducer,
   middleware: getDefaultMiddleware({
     serializableCheck: {
       ignoredActions: [

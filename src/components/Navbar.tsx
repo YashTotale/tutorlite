@@ -1,8 +1,22 @@
 import user from "../img/user.svg";
 import { useHistory } from "react-router";
+import { useAppDispatch } from "../Store";
+import { logout } from "../redux/logout.slice";
+
+function deleteAllCookies() {
+  const cookies = document.cookie.split(";");
+
+  for (let i = 0; i < cookies.length; i++) {
+    const cookie = cookies[i];
+    const eqPos = cookie.indexOf("=");
+    const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+    document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  }
+}
 
 export default function Nav() {
   const history = useHistory();
+  const dispatch = useAppDispatch();
 
   return (
     <div className="header header-fixed unselectable header-animated">
@@ -39,7 +53,16 @@ export default function Nav() {
             </a>
             <ul className="dropdown-menu dropdown-animated" role="menu">
               <li role="menu-item">
-                <a onClick={() => history.push("/register")}>Log out</a>
+                <a
+                  onClick={() => {
+                    dispatch(logout());
+                    localStorage.clear();
+                    deleteAllCookies();
+                    history.push("/register");
+                  }}
+                >
+                  Log out
+                </a>
               </li>
             </ul>
           </div>
