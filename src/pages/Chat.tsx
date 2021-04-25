@@ -13,6 +13,13 @@ import {
 } from "../redux";
 import { useHistory } from "react-router";
 import { useFirestore, useFirestoreConnect } from "react-redux-firebase";
+import Select from "react-select";
+import { Message } from "../Store";
+
+interface SelectOption {
+  label: string;
+  value: string;
+}
 
 interface ChatComponent {
   id: string;
@@ -30,6 +37,7 @@ export default function Chat(): JSX.Element | null {
 
   const [selected, setSelected] = useState<string | null>(null);
   const [input, setInput] = useState("");
+  const [newChat, setNewChat] = useState<SelectOption | null>(null);
 
   const history = useHistory();
   const user = useSelector(getUser);
@@ -48,6 +56,36 @@ export default function Chat(): JSX.Element | null {
   if (user.isEmpty) {
     history.push("/register");
   }
+
+  const onNewChat = (option: SelectOption | null) => {
+    setNewChat(option);
+
+    if (option === null) return;
+
+    firestore
+      .collection("chats")
+      .add({
+        messages: [],
+        users: [user.uid, option.value],
+      })
+      .then((doc) => {
+        firestore
+          .collection("users")
+          .doc(user.uid)
+          .update("chats", [...users[user.uid].chats, doc.id]);
+
+        firestore
+          .collection("users")
+          .doc(option.value)
+          .update("chats", [...users[option.value].chats, doc.id]);
+
+        return doc.id;
+      })
+      .then((id) => {
+        setSelected(id);
+        setNewChat(null);
+      });
+  };
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
@@ -72,21 +110,40 @@ export default function Chat(): JSX.Element | null {
   return (
     <div id="chat-container">
       <div id="chats-list">
+        <div id="chat-add">
+          <Select
+            placeholder="New chat..."
+            options={Object.entries(users).reduce((arr, [id, u]) => {
+              if (chats.find((c) => c.users.includes(id))) return arr;
+
+              return [
+                ...arr,
+                {
+                  label: u.name,
+                  value: id,
+                },
+              ];
+            }, [] as SelectOption[])}
+            value={newChat}
+            onChange={onNewChat}
+          />
+        </div>
         <ChatList
           className="chat-list"
           dataSource={chats.map(
             (c): ChatComponent => {
               const otherUser = users[c.users.filter((u) => u !== user.uid)[0]];
-              const lastMessage = c.messages[c.messages.length - 1];
+              const lastMessage: Message | undefined =
+                c.messages[c.messages.length - 1];
 
               return {
                 id: c.id,
                 avatar: otherUser.picture,
                 alt: otherUser.name,
                 title: otherUser.name,
-                subtitle: `${users[lastMessage.user].name}: ${
-                  lastMessage.text
-                }`,
+                subtitle:
+                  lastMessage &&
+                  `${users[lastMessage.user].name}: ${lastMessage.text}`,
               };
             }
           )}

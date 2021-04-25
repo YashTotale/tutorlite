@@ -97,6 +97,13 @@ li {
 #chats-list {
   margin: 10px;
   max-width: 250px;
+
+  display: flex;
+  flex-direction: column;
+}
+
+#chat-add {
+  margin-bottom: 10px;
 }
 
 #chat-showcase {
@@ -129,6 +136,7 @@ li {
 
 .chat-left {
   align-self: flex-start;
+  background-color: #e3e3e3;
 }
 
 .chat-right {
