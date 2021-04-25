@@ -30,22 +30,32 @@ interface ChatComponent {
 }
 
 export default function Chat(): JSX.Element | null {
+  const user = useSelector(getUser);
   useFirestoreConnect({ collection: "users" });
 
-  const user = useSelector(getUser);
+  if (user.uid !== undefined) {
+    useFirestoreConnect({
+      collection: "chats",
+      where: ["users", "array-contains", user.uid],
+    });
+  }
 
   const firestore = useFirestore();
 
   const [selected, setSelected] = useState<string | null>(null);
   const [input, setInput] = useState("");
   const [newChat, setNewChat] = useState<SelectOption | null>(null);
+  const [realUsers, setRealUsers] = useState<any>([]);
   const history = useHistory();
 
   const users = useSelector(getUsers);
   const usersLoading = useSelector(getUsersLoading);
 
   useEffect(() => {
-    console.log(users);
+    if (users !== undefined) {
+      console.log(users);
+      setRealUsers(users);
+    }
   }, [users]);
 
   const chats = useSelector(getChats);
@@ -56,12 +66,6 @@ export default function Chat(): JSX.Element | null {
     console.log("EXIT");
     return null;
   }
-
-  useFirestoreConnect({
-    collection: "chats",
-    where: ["users", "array-contains", user.uid],
-  });
-
   // if (user.isEmpty && users === undefined && user.uid === undefined) {
   //   history.push("/register");
   // }
@@ -139,18 +143,19 @@ export default function Chat(): JSX.Element | null {
           className="chat-list"
           dataSource={chats.map(
             (c): ChatComponent => {
-              const otherUser = users[c.users.filter((u) => u !== user.uid)[0]];
+              const otherUser =
+                realUsers[c.users.filter((u) => u !== user.uid)[0]];
               const lastMessage: Message | undefined =
                 c.messages[c.messages.length - 1];
 
               return {
                 id: c.id,
-                avatar: otherUser.picture,
-                alt: otherUser.name,
-                title: otherUser.name,
+                avatar: otherUser?.picture,
+                alt: otherUser?.name,
+                title: otherUser?.name,
                 subtitle:
                   lastMessage &&
-                  `${users[lastMessage.user].name}: ${lastMessage.text}`,
+                  `${users[lastMessage.user]?.name}: ${lastMessage?.text}`,
               };
             }
           )}
@@ -159,7 +164,6 @@ export default function Chat(): JSX.Element | null {
       </div>
       <div id="chat-showcase">
         <h6>
-          {selected ? "Tutorlite Direct Message Service" : "No Chat Selected"}
           {selected
             ? chatsObj[selected]
               ? `Chatting with ${
@@ -167,7 +171,7 @@ export default function Chat(): JSX.Element | null {
                     chatsObj[selected].users.filter((u) => u !== user.uid)[0]
                   ].name
                 }`
-              : "Chatting"
+              : "Tutorlite Direct Messages"
             : "No Chat Selected"}
         </h6>
         {selected &&
@@ -180,8 +184,8 @@ export default function Chat(): JSX.Element | null {
             >
               <img
                 className="chat-image"
-                src={users[m.user].picture}
-                alt={users[m.user].name}
+                src={realUsers[m.user].picture}
+                alt={realUsers[m.user].name}
               />
               <div>{m.text}</div>
             </div>
