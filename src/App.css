@@ -137,3 +137,19 @@ li {
   margin: 5px;
   border-radius: 50%;
 }
+
+.chat-form {
+  width: 100%;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chat-input {
+  margin-right: 10px;
+}
+
+.chat-input-send {
+  margin-top: 15px;
+}

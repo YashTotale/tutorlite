@@ -12,7 +12,7 @@ import {
   getUsersLoading,
 } from "../redux";
 import { useHistory } from "react-router";
-import { useFirestoreConnect } from "react-redux-firebase";
+import { useFirestore, useFirestoreConnect } from "react-redux-firebase";
 
 interface ChatComponent {
   id: string;
@@ -26,7 +26,10 @@ export default function Chat(): JSX.Element | null {
   useFirestoreConnect({ collection: "users" });
   useFirestoreConnect({ collection: "chats" });
 
+  const firestore = useFirestore();
+
   const [selected, setSelected] = useState<string | null>(null);
+  const [input, setInput] = useState("");
 
   const history = useHistory();
   const user = useSelector(getUser);
@@ -45,6 +48,26 @@ export default function Chat(): JSX.Element | null {
   if (user.isEmpty) {
     history.push("/register");
   }
+
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault();
+
+    if (input) {
+      setInput("");
+
+      firestore
+        .collection("chats")
+        .doc(selected as string)
+        .update("messages", [
+          ...chatsObj[selected as string].messages,
+          {
+            text: input,
+            date: new Date(),
+            user: user.uid,
+          },
+        ]);
+    }
+  };
 
   return (
     <div id="chat-container">
@@ -71,23 +94,34 @@ export default function Chat(): JSX.Element | null {
         />
       </div>
       <div id="chat-showcase">
-        {selected
-          ? chatsObj[selected].messages.map((m, i) => (
-              <div
-                key={i}
-                className={`chat-${
-                  m.user === user.uid ? "right" : "left"
-                } chat-message`}
-              >
-                <img
-                  className="chat-image"
-                  src={users[m.user].picture}
-                  alt={users[m.user].name}
-                />
-                <div>{m.text}</div>
-              </div>
-            ))
-          : "No chat selected"}
+        <h6>{selected ? "Chatting" : "No Chat Selected"}</h6>
+        {selected &&
+          chatsObj[selected].messages.map((m, i) => (
+            <div
+              key={i}
+              className={`chat-${
+                m.user === user.uid ? "right" : "left"
+              } chat-message`}
+            >
+              <img
+                className="chat-image"
+                src={users[m.user].picture}
+                alt={users[m.user].name}
+              />
+              <div>{m.text}</div>
+            </div>
+          ))}
+        {selected && (
+          <form className="chat-form" onSubmit={handleSubmit}>
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              className="chat-input"
+              type="text"
+            />
+            <button className="chat-input-send">Send</button>
+          </form>
+        )}
       </div>
     </div>
   );
