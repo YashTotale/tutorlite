@@ -114,7 +114,8 @@ export default function Chat(): JSX.Element | null {
           <Select
             placeholder="New chat..."
             options={Object.entries(users).reduce((arr, [id, u]) => {
-              if (chats.find((c) => c.users.includes(id))) return arr;
+              if (user.uid === id || chats.find((c) => c.users.includes(id)))
+                return arr;
 
               return [
                 ...arr,
@@ -153,7 +154,7 @@ export default function Chat(): JSX.Element | null {
       <div id="chat-showcase">
         <h6>{selected ? "Chatting" : "No Chat Selected"}</h6>
         {selected &&
-          chatsObj[selected].messages.map((m, i) => (
+          chatsObj[selected]?.messages.map((m, i) => (
             <div
               key={i}
               className={`chat-${

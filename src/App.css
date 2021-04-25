@@ -96,10 +96,13 @@ li {
 
 #chats-list {
   margin: 10px;
-  max-width: 250px;
+  width: 250px;
 
   display: flex;
   flex-direction: column;
+
+  max-height: 700px;
+  overflow-y: scroll;
 }
 
 #chat-add {
@@ -116,6 +119,9 @@ li {
   min-width: 200px;
   border-left: 1px solid lightgray;
   padding: 10px;
+
+  max-height: 700px;
+  overflow-y: scroll;
 }
 
 .chat-message {
