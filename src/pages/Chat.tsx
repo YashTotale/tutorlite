@@ -15,6 +15,7 @@ import { useHistory } from "react-router";
 import { useFirestore, useFirestoreConnect } from "react-redux-firebase";
 import Select from "react-select";
 import { Message } from "../Store";
+import { convertFirestoreDate } from "../utils/funcs";
 
 interface SelectOption {
   label: string;
@@ -26,6 +27,7 @@ interface ChatComponent {
   avatar: string;
   alt: string;
   title: string;
+  date: Date | null;
   subtitle: string;
 }
 
@@ -128,23 +130,29 @@ export default function Chat(): JSX.Element | null {
         </div>
         <ChatList
           className="chat-list"
-          dataSource={chats.map(
-            (c): ChatComponent => {
-              const otherUser = users[c.users.filter((u) => u !== user.uid)[0]];
-              const lastMessage: Message | undefined =
-                c.messages[c.messages.length - 1];
+          dataSource={chats
+            .filter((c) => c.users.includes(user.uid))
+            .map(
+              (c): ChatComponent => {
+                const otherUser =
+                  users[c.users.filter((u) => u !== user.uid)[0]];
+                const lastMessage: Message | undefined =
+                  c.messages[c.messages.length - 1];
 
-              return {
-                id: c.id,
-                avatar: otherUser.picture,
-                alt: otherUser.name,
-                title: otherUser.name,
-                subtitle:
-                  lastMessage &&
-                  `${users[lastMessage.user].name}: ${lastMessage.text}`,
-              };
-            }
-          )}
+                return {
+                  id: c.id,
+                  avatar: otherUser.picture,
+                  alt: otherUser.name,
+                  title: otherUser.name,
+                  date: lastMessage
+                    ? convertFirestoreDate(lastMessage.date)
+                    : null,
+                  subtitle:
+                    lastMessage &&
+                    `${users[lastMessage.user].name}: ${lastMessage.text}`,
+                };
+              }
+            )}
           onClick={(c: ChatComponent) => setSelected(c.id)}
         />
       </div>

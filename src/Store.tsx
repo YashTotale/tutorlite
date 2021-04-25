@@ -1,5 +1,6 @@
 // React Imports
 import React, { FC } from "react";
+import { FirestoreDate } from "./utils/funcs";
 
 // Redux Imports
 import {
@@ -55,10 +56,7 @@ import { scheduleReducer } from "./redux/schedule.slice";
 
 export interface Message {
   text: string;
-  date: {
-    seconds: number;
-    nanoseconds: number;
-  };
+  date: FirestoreDate;
   user: string;
 }
 
