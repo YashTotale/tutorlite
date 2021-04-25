@@ -174,8 +174,6 @@ const Register: FC = () => {
                             signInFlow: "popup",
                             callbacks: {
                               signInSuccessWithAuthResult(result) {
-                                console.log(result);
-
                                 const isNew =
                                   result.additionalUserInfo.isNewUser;
 
@@ -191,6 +189,7 @@ const Register: FC = () => {
                                   });
                                 }
 
+                                window.location.reload();
                                 setRedirect("/");
 
                                 return true;

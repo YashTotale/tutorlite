@@ -8,6 +8,7 @@ import {
   getDefaultMiddleware,
   ThunkAction,
   Action,
+  PayloadAction,
 } from "@reduxjs/toolkit";
 import { Provider, useDispatch } from "react-redux";
 
@@ -50,6 +51,7 @@ import storage from "redux-persist/lib/storage";
 // Reducer Imports
 import { homeReducer } from "./redux/home.slice";
 import { exploreReducer } from "./redux/explore.slice";
+import { scheduleReducer } from "./redux/schedule.slice";
 
 export interface Message {
   text: string;
@@ -79,6 +81,7 @@ export interface Profile {
 interface State {
   home: any;
   explore: any;
+  schedule: any;
   firebase: FirebaseReducer.Reducer<Profile, Record<string, unknown>>;
   firestore: FirestoreReducer.Reducer;
 }
@@ -86,12 +89,13 @@ interface State {
 const rootPersistConfig = {
   version: 1,
   storage,
-  blacklist: ["home"],
+  blacklist: ["home", "schedule"],
 };
 
 const reducers = combineReducers<State>({
   home: homeReducer,
   explore: exploreReducer,
+  schedule: scheduleReducer,
   firebase: firebaseReducer,
   firestore: firestoreReducer,
 });
@@ -106,8 +110,16 @@ const extraArgument = {
   getFirestore,
 };
 
+const rootReducer = (state: any, action: PayloadAction) => {
+  if (action.type === "logout/logout") {
+    console.log("logging out...");
+    state = undefined;
+  }
+  return persistedReducer(state, action);
+};
+
 const store = configureStore({
-  reducer: persistedReducer,
+  reducer: rootReducer,
   middleware: getDefaultMiddleware({
     serializableCheck: {
       ignoredActions: [
