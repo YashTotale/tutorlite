@@ -38,7 +38,9 @@ export default function Nav() {
             <a onClick={() => history.push("/")}>Home</a>
           </div>
           <div className="nav-item">
-            <a onClick={() => history.push("/explore")}>Find Tutors</a>
+            <a onClick={() => history.push("/explore")}>
+              Find {profile.type === "tutor" ? "students" : "tutors"}
+            </a>
           </div>
           <div className="nav-item">
             <a onClick={() => history.push("/chat")}>Messages</a>

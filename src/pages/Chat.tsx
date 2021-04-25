@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "react-chat-elements/dist/main.css";
 //@ts-expect-error No typing
 import { ChatList } from "react-chat-elements";
@@ -31,31 +31,40 @@ interface ChatComponent {
 
 export default function Chat(): JSX.Element | null {
   useFirestoreConnect({ collection: "users" });
-  useFirestoreConnect({ collection: "chats" });
+
+  const user = useSelector(getUser);
 
   const firestore = useFirestore();
 
   const [selected, setSelected] = useState<string | null>(null);
   const [input, setInput] = useState("");
   const [newChat, setNewChat] = useState<SelectOption | null>(null);
-
   const history = useHistory();
-  const user = useSelector(getUser);
 
   const users = useSelector(getUsers);
   const usersLoading = useSelector(getUsersLoading);
+
+  useEffect(() => {
+    console.log(users);
+  }, [users]);
 
   const chats = useSelector(getChats);
   const chatsObj = useSelector(getChatsObj);
   const chatsLoading = useSelector(getChatsLoading);
 
   if (!chats || chatsLoading || !users || usersLoading) {
+    console.log("EXIT");
     return null;
   }
 
-  if (user.isEmpty) {
-    history.push("/register");
-  }
+  useFirestoreConnect({
+    collection: "chats",
+    where: ["users", "array-contains", user.uid],
+  });
+
+  // if (user.isEmpty && users === undefined && user.uid === undefined) {
+  //   history.push("/register");
+  // }
 
   const onNewChat = (option: SelectOption | null) => {
     setNewChat(option);
@@ -152,7 +161,9 @@ export default function Chat(): JSX.Element | null {
         />
       </div>
       <div id="chat-showcase">
-        <h6>{selected ? "Chatting" : "No Chat Selected"}</h6>
+        <h6>
+          {selected ? "Tutorlite Direct Message Service" : "No Chat Selected"}
+        </h6>
         {selected &&
           chatsObj[selected]?.messages.map((m, i) => (
             <div

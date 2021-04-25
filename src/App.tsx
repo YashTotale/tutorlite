@@ -9,8 +9,17 @@ import Nav from "./components/Navbar";
 import Schedule from "./pages/Schedule";
 import User from "./pages/User";
 import Chat from "./pages/Chat";
+import { useSelector } from "react-redux";
+import { useHistory } from "react-router";
 
 function App() {
+  const uid = useSelector<any>((state) => state.firebase.auth.uid);
+  const history = useHistory();
+
+  if (uid === undefined) {
+    history.push("/register");
+  }
+
   return (
     <Switch>
       <Route exact path="/">

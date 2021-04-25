@@ -147,7 +147,10 @@ export default function Schedule() {
           />
         </div>
         <div className={"m-3"}>
-          <label>Select the tutor you will be working with</label>
+          <label>
+            Select the {profile.type === "tutor" ? "student" : "tutor"} you will
+            be working with
+          </label>
           <Select
             styles={{
               menu: (provided) => ({ ...provided, zIndex: 999999 }),
