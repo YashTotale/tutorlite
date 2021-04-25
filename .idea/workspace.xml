@@ -2,10 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c38ef352-ae5e-48db-b62e-5a7ca67105f1" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/redux/schedule.slice.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Store.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Store.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/Explore.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Explore.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/api/server.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/Home.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Home.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/Schedule.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/Schedule.tsx" afterDir="false" />
     </list>
@@ -102,7 +101,7 @@
       <workItem from="1618987781459" duration="3741000" />
       <workItem from="1619115754557" duration="18282000" />
       <workItem from="1619295048130" duration="4933000" />
-      <workItem from="1619302161552" duration="2942000" />
+      <workItem from="1619302161552" duration="6989000" />
     </task>
     <servers />
   </component>
@@ -114,16 +113,5 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/src/pages/Home.tsx</url>
-          <line>56</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

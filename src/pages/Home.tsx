@@ -12,12 +12,12 @@ import {
 
 type Item = { data: any; id: string };
 type AppointmentType = {
-  StudentID?: string;
-  TutorID?: string;
-  MeetingLink: string;
+  datetime: any;
+  meetingLink: string;
+  subjects: string[];
+  tutorOrStudentId: string;
   id: string;
-  Datetime: Date;
-  Subjects: string[];
+  tutorOrStudentName: string;
 };
 type TutorStudentType = {
   grade: string;
@@ -47,27 +47,23 @@ export default () => {
   const ts = useSelector(selectTS);
 
   const fetchAppointments = async () => {
-    if (uid === undefined) return;
-
     const db = firebase.firestore();
 
     const { docs } = await db
       .collection("appointments")
-      .where("StudentID", "==", uid)
+      .where("id", "==", uid)
       .get();
 
     if (docs.length === 0) {
       setAppointmentsEmpty(true);
       return;
     }
-    const temp: Item[] = [];
-    // find the student's name here todo
-    docs.forEach((item: Item) => {
+    const temp: any[] = [];
+    docs.forEach((item: any) => {
       const x = item.id;
       temp.push({ ...item.data(), id: x });
     });
     dispatch(updateAppointments(temp));
-    console.log(temp);
   };
 
   const fetchStudentOrTutors = async () => {
@@ -111,6 +107,12 @@ export default () => {
     }
   }, [uid]);
 
+  const convert = (s: number) => {
+    const t = new Date(1970, 0, 1);
+    t.setSeconds(s);
+    return t;
+  };
+
   return (
     <>
       <h3 style={{ marginTop: 15 }}>Your appointments</h3>
@@ -137,18 +139,22 @@ export default () => {
             gridTemplateColumns: "repeat(auto-fill, minmax(450px, 1fr))",
           }}
         >
-          {/* instead of displaying the StudentID -> display his name */}
-          {appointments.map((curr: AppointmentType, index: number) => (
-            <React.Fragment key={index}>
-              <HomeAppointmentCard
-                title={new Date(curr.Datetime).toString()}
-                withX={curr.StudentID}
-                forX={curr.Subjects.toString()}
-                link={curr.MeetingLink}
-                idToDelete={curr.id}
-              />
-            </React.Fragment>
-          ))}
+          {appointments.map((curr: AppointmentType, index: number) => {
+            return (
+              <React.Fragment key={index}>
+                <HomeAppointmentCard
+                  title={convert(curr.datetime.seconds).toDateString()}
+                  withX={curr.tutorOrStudentName}
+                  forX={curr.subjects.map((curr, index) => (
+                    <span key={index}>{curr + " "}</span>
+                  ))}
+                  link={curr.meetingLink}
+                  idToDelete={curr.id}
+                  fetchAppointments={fetchAppointments}
+                />
+              </React.Fragment>
+            );
+          })}
         </div>
       ) : (
         <span>loading...</span>
@@ -194,10 +200,11 @@ export default () => {
 
 interface HomeAppointmentCardProps {
   title: string;
-  withX: string | undefined;
-  forX: string;
+  withX: any;
+  forX: any;
   link: string;
   idToDelete: string;
+  fetchAppointments: any;
 }
 
 const HomeAppointmentCard: FC<HomeAppointmentCardProps> = ({
@@ -206,6 +213,7 @@ const HomeAppointmentCard: FC<HomeAppointmentCardProps> = ({
   forX,
   link,
   idToDelete,
+  fetchAppointments,
 }) => {
   const firebase = useFirebase();
 
@@ -220,7 +228,7 @@ const HomeAppointmentCard: FC<HomeAppointmentCardProps> = ({
               .doc(idToDelete)
               .delete()
               .then(() => {
-                alert("Successfully deleted!");
+                fetchAppointments();
               });
           }}
           style={{ marginLeft: "auto" }}

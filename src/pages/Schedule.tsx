@@ -58,7 +58,9 @@ export default function Schedule() {
       datetime: date,
       meetingLink: meetingLink,
       subjects: subjects,
-      userId: tutor.value,
+      tutorOrStudentId: tutor.value,
+      tutorOrStudentName: tutor.label,
+      id: uid,
     });
 
     setSubjects([]);
